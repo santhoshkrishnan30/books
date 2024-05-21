@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #ffffff;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            color: #ffa500;
+        }
+        #dataContainer {
+            margin: 20px auto;
+            max-width: 600px;
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ffa500;
+            color: #121212;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #ff8c00;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #2e2e2e;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(255, 165, 0, 0.3);
+        }
+        li:hover {
+            background-color: #3a3a3a;
+        }
+        p {
+            text-align: center;
+            color: #ffa500;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Bookstore Website!</h1>
+    <div id="dataContainer"></div>
+
+    <button onclick="getBooks()">Get Books</button>
+    <button onclick="getAuthors()">Get Authors</button>
+
+    <script>
+        async function getBooks() {
+            const dataContainer = document.getElementById('dataContainer');
+            dataContainer.innerHTML = '<p>Loading books...</p>'; // Show loading indicator
+            try {
+                const response = await fetch('http://localhost:5001/books', {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch books');
+                }
+
+                const data = await response.json();
+                displayBooks(data);
+            } catch (error) {
+                console.error('Error:', error.message);
+                dataContainer.innerHTML = '<p>Failed to fetch books. Please try again later.</p>'; // Show error message
+            }
+        }
+
+        async function getAuthors() {
+            const dataContainer = document.getElementById('dataContainer');
+            dataContainer.innerHTML = '<p>Loading authors...</p>'; // Show loading indicator
+            try {
+                const response = await fetch('http://localhost:5002/authors', {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch authors');
+                }
+
+                const data = await response.json();
+                displayAuthors(data);
+            } catch (error) {
+                console.error('Error:', error.message);
+                dataContainer.innerHTML = '<p>Failed to fetch authors. Please try again later.</p>'; // Show error message
+            }
+        }
+
+        function displayBooks(data) {
+            const dataContainer = document.getElementById('dataContainer');
+            dataContainer.innerHTML = ''; // Clear previous content
+            const dataList = document.createElement('ul');
+            dataContainer.appendChild(dataList);
+
+            // Iterate over each book and create a list item for it
+            data.books.forEach(book => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Title: ${book.title}, Author: ${book.author}, Genre: ${book.genre}, Price: ${book.price}`;
+                dataList.appendChild(listItem);
+            });
+        }
+
+        function displayAuthors(data) {
+            const dataContainer = document.getElementById('dataContainer');
+            dataContainer.innerHTML = ''; // Clear previous content
+            const dataList = document.createElement('ul');
+            dataContainer.appendChild(dataList);
+
+            // Iterate over each author and create a list item for it
+            data.authors.forEach(author => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Name: ${author.name}, Nationality: ${author.nationality}, Genre: ${author.genre}`;
+                dataList.appendChild(listItem);
+            });
+        }
+    </script>
+</body>
+</html>
